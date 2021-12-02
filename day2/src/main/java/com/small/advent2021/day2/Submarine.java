@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public class Submarine {
     private static final Logger LOGGER = Logger.getLogger(Submarine.class);
 
-    private int horiz = 0;
+    private int horizontalPosition = 0;
     private int depth = 0;
     private int aim = 0;
 
@@ -24,12 +24,12 @@ public class Submarine {
         LOGGER.info("Final Position = " + position);
     }
 
-    public int getHoriz() {
-        return horiz;
+    public int getHorizontalPosition() {
+        return horizontalPosition;
     }
 
     public void forward(int distance) {
-        horiz += distance;
+        horizontalPosition += distance;
         depth += aim * distance;
     }
 
@@ -46,18 +46,18 @@ public class Submarine {
     }
 
     public int getPos() {
-        return horiz * depth;
+        return horizontalPosition * depth;
     }
 
-    public void processList(List<Command> cmds) {
-        for (Command cmd : cmds) {
+    public void processList(List<Command> commands) {
+        for (Command cmd : commands) {
             move(cmd);
         }
     }
 
-    public void processList(List<Command> cmds, int steps) {
+    public void processList(List<Command> commands, int steps) {
         for (int step = 0; step < steps; ++step) {
-            move(cmds.get(step));
+            move(commands.get(step));
         }
     }
 
@@ -73,15 +73,16 @@ public class Submarine {
     public List<Command> getListFromFile(String fileName) throws IOException {
         Path path = Path.of(fileName);
 
-        return Files
-                .lines(path)
-                .map(Command::new)
-                .toList();
+        try(Stream<String> lines = Files.lines(path)) {
+            return lines
+                    .map(Command::new)
+                    .toList();
+        }
     }
 
-    class Command {
-        String action;
-        Integer distance;
+    static class Command {
+        final String action;
+        final Integer distance;
 
         Command(String s) {
             var a = s.split(" ");

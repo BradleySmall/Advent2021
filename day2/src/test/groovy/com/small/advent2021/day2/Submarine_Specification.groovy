@@ -1,3 +1,5 @@
+package com.small.advent2021.day2
+
 import spock.lang.Specification
 
 class Submarine_Specification extends Specification {
@@ -5,12 +7,12 @@ class Submarine_Specification extends Specification {
 
     def "should forward"() {
         given:
-        def oldHoriz = sub.getHoriz()
+        def oldHorizontalPosition = sub.getHorizontalPosition()
         when:
         sub.forward(5)
 
         then:
-        oldHoriz + 5 == sub.getHoriz()
+        oldHorizontalPosition + 5 == sub.getHorizontalPosition()
 
     }
 
@@ -47,7 +49,7 @@ class Submarine_Specification extends Specification {
 
         then:
         sub.getDepth() == 60
-        sub.getHoriz() == 15
+        sub.getHorizontalPosition() == 15
         sub.getPos() == 900
 
     }
@@ -66,7 +68,7 @@ class Submarine_Specification extends Specification {
 
     def "should get position 21"() {
         when:
-        sub.horiz = 3
+        sub.horizontalPosition = 3
         sub.depth = 7
         then:
         sub.getPos() == 21
@@ -79,7 +81,7 @@ class Submarine_Specification extends Specification {
         sub.processList(list, 4)
         then:
         sub.getDepth() == 54
-        sub.getHoriz() == 10
+        sub.getHorizontalPosition() == 10
         sub.getPos() == 540
     }
 }

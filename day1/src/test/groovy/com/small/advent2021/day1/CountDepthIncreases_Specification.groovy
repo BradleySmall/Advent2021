@@ -1,3 +1,5 @@
+package com.small.advent2021.day1
+
 import spock.lang.Specification
 
 class CountDepthIncreases_Specification extends Specification {
@@ -47,7 +49,7 @@ class CountDepthIncreases_Specification extends Specification {
         list.size() > 0
     }
 
-    def "should create a slideing sum list from a file"() {
+    def "should create a sliding sum list from a file"() {
         given:
         CountIncreases ci = new CountIncreases()
 

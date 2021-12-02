@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CountIncreases {
     private static final Logger LOGGER = Logger.getLogger(CountIncreases.class);
@@ -52,11 +53,11 @@ public class CountIncreases {
 
     public List<Integer> getListFromFile(String fileName) throws IOException {
         Path path = Path.of(fileName);
-
-        return Files
-                .lines(path)
-                .map(Integer::parseInt)
-                .toList();
+        try(Stream<String> lines = Files.lines(path)) {
+            return lines
+                    .map(Integer::parseInt)
+                    .toList();
+        }
     }
 
     public List<Integer> slideCountList(List<Integer> l, int count) {
