@@ -1,6 +1,6 @@
 import spock.lang.Specification
 
-class CountDepthIncreases_Specification extends Specification{
+class CountDepthIncreases_Specification extends Specification {
     def "should count increases and show 1"() {
         given:
         CountIncreases ci = new CountIncreases()
@@ -12,6 +12,7 @@ class CountDepthIncreases_Specification extends Specification{
         then:
         count == 1
     }
+
     def "should count increases and show 0"() {
         given:
         CountIncreases ci = new CountIncreases()
@@ -23,17 +24,18 @@ class CountDepthIncreases_Specification extends Specification{
         then:
         count == 0
     }
+
     def "should open a file"() {
         given:
-        CountIncreases ci = new CountIncreases()
         File file = new File("input.txt")
 
         when:
         def canRead = file.canRead()
 
         then:
-        canRead == true
+        canRead
     }
+
     def "should create a list from a file"() {
         given:
         CountIncreases ci = new CountIncreases()
@@ -53,8 +55,6 @@ class CountDepthIncreases_Specification extends Specification{
         List<Integer> l = ci.getListFromFile("input.txt")
         List<Integer> list = ci.slideCountList(l, 3)
 
-
-
         then:
         list.size() > 0
     }
@@ -69,6 +69,5 @@ class CountDepthIncreases_Specification extends Specification{
 
         then:
         count == 1451
-
     }
 }

@@ -13,6 +13,7 @@ class Submarine_Specification extends Specification {
         oldHoriz + 5 == sub.getHoriz()
 
     }
+
     def "should down doesn't change depth"() {
         given:
         def oldVert = sub.getDepth()
@@ -20,9 +21,10 @@ class Submarine_Specification extends Specification {
         sub.down(5)
 
         then:
-        oldVert  == sub.getDepth()
+        oldVert == sub.getDepth()
 
     }
+
     def "should up doesn't change depth"() {
         given:
         def oldVert = sub.getDepth()
@@ -33,6 +35,7 @@ class Submarine_Specification extends Specification {
         oldVert == sub.getDepth()
 
     }
+
     def "should show some 60, 15, 900"() {
         when:
         sub.forward(5)
@@ -48,6 +51,7 @@ class Submarine_Specification extends Specification {
         sub.getPos() == 900
 
     }
+
     void setup() {
         sub = new Submarine()
 
@@ -55,7 +59,7 @@ class Submarine_Specification extends Specification {
 
     def "should get list of commands"() {
         when:
-        List<String> list = sub.getListFromFile("input.txt")
+        List<Submarine.Command> list = sub.getListFromFile("input.txt")
         then:
         list.size() != 0
     }

@@ -1,15 +1,38 @@
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class CountIncreases {
-    public int countIncreases(String fileName) throws FileNotFoundException {
+    public static void main(String[] args) {
+        CountIncreases ci = new CountIncreases();
+        try {
+            int count = ci.countIncreases("day1/input.txt");
+            System.out.println("Increases " + count);
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            int count = ci.countIncreases("day1/input.txt", 3);
+            System.out.println("Increases " + count);
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int countIncreases(String fileName) throws IOException {
         return count(getListFromFile(fileName));
     }
-    public int countIncreases(String fileName, int slideCount) throws FileNotFoundException {
-        return count(slideCountList(getListFromFile(fileName),slideCount));
+
+    public int countIncreases(String fileName, int slideCount) throws IOException {
+        return count(slideCountList(getListFromFile(fileName), slideCount));
     }
 
     public int count(List<Integer> list) {
@@ -23,19 +46,17 @@ public class CountIncreases {
         return count;
     }
 
-    public List<Integer> getListFromFile(String fileName) throws FileNotFoundException {
-        List<Integer> list = new ArrayList<Integer>();
+    public List<Integer> getListFromFile(String fileName) throws IOException {
+        Path path = Path.of(fileName);
 
-        File f = new File(fileName);
-        Scanner s = new Scanner(f);
-        while(s.hasNext()) {
-            list.add(Integer.parseInt(s.nextLine()));
-        }
-
-        return list;
+        return Files
+                .lines(path)
+                .map(Integer::parseInt)
+                .toList();
     }
+
     public List<Integer> slideCountList(List<Integer> l, int count) {
-        List list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
 
         int current = 0;
         int value = 0;
@@ -49,26 +70,7 @@ public class CountIncreases {
             current += 1;
         }
 
-
-
-       return list;
-    }
-
-    public static void main(String[] args) {
-        CountIncreases ci = new CountIncreases();
-        try {
-            int count = ci.countIncreases("day1/input.txt");
-            System.out.println("Increases " + count);
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-
-        try {
-            int count = ci.countIncreases("input.txt", 3);
-            System.out.println("Increases " + count);
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        return list;
     }
 
 }
