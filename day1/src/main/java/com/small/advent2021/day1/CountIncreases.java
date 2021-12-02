@@ -1,3 +1,6 @@
+package com.small.advent2021.day1;
+import org.apache.log4j.Logger;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,22 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CountIncreases {
+    private static final Logger LOGGER = Logger.getLogger(CountIncreases.class);
     public static void main(String[] args) {
         CountIncreases ci = new CountIncreases();
         try {
             int count = ci.countIncreases("day1/input.txt");
-            System.out.println("Increases " + count);
+            LOGGER.info("Increases " + count);
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
             int count = ci.countIncreases("day1/input.txt", 3);
-            System.out.println("Increases " + count);
+            LOGGER.info("Increases " + count);
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }

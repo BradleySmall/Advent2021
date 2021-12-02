@@ -1,19 +1,27 @@
+package com.small.advent2021.day2;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
+
 
 public class Submarine {
+    private static final Logger LOGGER = Logger.getLogger(Submarine.class);
+
     private int horiz = 0;
     private int depth = 0;
     private int aim = 0;
 
     public static void main(String[] args) throws IOException {
+
         Submarine sub = new Submarine();
         List<Command> list = sub.getListFromFile("day2/input.txt");
         sub.processList(list);
         int position = sub.getPos();
-        System.out.println("Final position = " + position);
+        LOGGER.info("Final Position = " + position);
     }
 
     public int getHoriz() {
@@ -64,6 +72,7 @@ public class Submarine {
 
     public List<Command> getListFromFile(String fileName) throws IOException {
         Path path = Path.of(fileName);
+
         return Files
                 .lines(path)
                 .map(Command::new)
