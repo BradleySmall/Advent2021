@@ -7,17 +7,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Bingo {
 
+    private static final Logger log = Logger.getLogger(Bingo.class);
     private BallCall ballCall;
     private Cards cards;
-    private boolean hasWinner = false;
-
-    private static final Logger log = Logger.getLogger(Bingo.class);
 
     Bingo(String fileName) {
         processFile(fileName);
@@ -44,38 +43,46 @@ public class Bingo {
         }
     }
 
-    public Status getStatus() {
-        log.info("getStatus");
-        if (hasWinner) {
-            return Status.SUCCESS;
-        }
-        return Status.FAILURE;
+    public String showCard(int card) {
+        return Arrays.deepToString(cards.cardDeck.get(card))
+                .replace("[[", "\n [")
+                .replace("],", "]\n")
+                .replace("]]", "]");
     }
 
-    public enum Status {
-        SUCCESS,
-        FAILURE
+    public String showCards() {
+        return Arrays.deepToString(cards.cardDeck.toArray()).replace("]],", "]\n\n")
+                .replace("[[[", "\n [")
+                .replace("[[", "[")
+                .replace("]]", "]")
+                .replace("],", "]\n");
     }
 
-    public static void main(String[] args) {
-        String fileName = "input.txt";
-        Bingo bingo = new Bingo(fileName);
-
-        bingo.run();
-
-        log.info(bingo.getStatus());
+    public String showBallCall() {
+        return Arrays.toString(ballCall.ballCallArray);
     }
 
-    private class BallCall {
+    private static class BallCall {
+
         private final String[] ballCallArray;
-
         public BallCall(String balls) {
             ballCallArray = balls.split(",");
         }
-    }
 
+    }
     private class Cards {
         private final List<String[][]> cardDeck = new ArrayList<>();
+        public Cards(List<String> cards) {
+            for (int index = 0; index < cards.size(); index += 6) {
+                cardDeck.add(
+                        cards.subList(index, index + 5)
+                                .stream()
+                                .map(row -> row.trim()
+                                        .split(" +"))
+                                .toArray(String[][]::new)
+                );
+            }
+        }
 
         int score(int index, int call) {
             int theScore = 0;
@@ -83,7 +90,7 @@ public class Bingo {
             String[][] card = cardDeck.get(index);
             for (String[] row : card) {
                 for (String column : row) {
-                    if (! column.contains("*")) {
+                    if (!column.contains("*")) {
                         theScore += Integer.parseInt(column);
                     }
                 }
@@ -93,17 +100,15 @@ public class Bingo {
 
         void daub(String call) {
             int deckIndex = 0;
-            for (String [][] card : cardDeck) {
+            for (String[][] card : cardDeck) {
                 int rowIndex = 0;
-                for (String [] row : card) {
+                for (String[] row : card) {
                     int columnIndex = 0;
                     for (String column : row) {
                         if (column.equals(call)) {
-                            cardDeck.get(deckIndex)[rowIndex][columnIndex] = "*"+column+"*";
+                            cardDeck.get(deckIndex)[rowIndex][columnIndex] = "*" + column + "*";
 
                             if (isWin(cardDeck.get(deckIndex), columnIndex, rowIndex)) {
-                                hasWinner = true;
-
                                 log.info("Winner = " + deckIndex + " Winning Score =" + score(deckIndex, Integer.parseInt(call)) + " last called=" + call);
                                 cards.clearCard(deckIndex);
                             }
@@ -112,33 +117,33 @@ public class Bingo {
                     }
                     rowIndex += 1;
                 }
-            deckIndex += 1;
+                deckIndex += 1;
             }
         }
 
         private boolean isWin(String[][] card, int columnIndex, int rowIndex) {
             return IntStream.range(0, 5).allMatch(r -> card[r][columnIndex].contains("*")) ||
-                   IntStream.range(0, 5).allMatch(c -> card[rowIndex][c].contains("*"));
-        }
-
-        public Cards(List<String> cards) {
-            for(int index = 0; index < cards.size(); index += 6) {
-                cardDeck.add(
-                        cards.subList(index, index + 5)
-                        .stream()
-                                .map(row -> row.trim()
-                                        .split(" +") )
-                                .toArray(String[][]::new)
-                );
-            }
+                    IntStream.range(0, 5).allMatch(c -> card[rowIndex][c].contains("*"));
         }
 
         public void clearCard(int winner) {
-            for (int rowIndex=0; rowIndex<5;++rowIndex) {
-                for (int columnIndex = 0; columnIndex<5;++columnIndex) {
+            for (int rowIndex = 0; rowIndex < 5; ++rowIndex) {
+                for (int columnIndex = 0; columnIndex < 5; ++columnIndex) {
                     cardDeck.get(winner)[rowIndex][columnIndex] = "";
                 }
             }
         }
+
+    }
+
+    public static void main(String[] args) {
+        String fileName = "input.txt";
+        Bingo bingo = new Bingo(fileName);
+        log.info(bingo.showCard(0));
+        log.info(bingo.showCards());
+        log.info(bingo.showBallCall());
+
+        bingo.run();
+
     }
 }
