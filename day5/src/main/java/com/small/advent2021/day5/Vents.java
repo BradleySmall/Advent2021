@@ -18,6 +18,7 @@ public class Vents {
     private List<LineSegment> lineList;
     private Map<Point, Long> matrix;
 
+    @SuppressWarnings("SameParameterValue")
     Vents(String fileName) {
         processFile(fileName);
         putCountedPointsOnMatrix();
@@ -60,8 +61,8 @@ public class Vents {
         }
     }
 
-    private class LineSegment {
-        String[] pointArray;
+    private static class LineSegment {
+        final String[] pointArray;
 
         LineSegment(String input) {
             pointArray = input.split(",");
@@ -76,6 +77,7 @@ public class Vents {
         }
 
         List<Point> toPoints() {
+            // TODO: reduce this stuff
             int fromX = Integer.parseInt(pointArray[0]);
             int fromY = Integer.parseInt(pointArray[1]);
             int toX = Integer.parseInt(pointArray[2]);
@@ -83,14 +85,12 @@ public class Vents {
 
             List<Point> list = new ArrayList<>();
             if (isHorizontal()) {
-                int x = fromX;
                 for (int y = min(fromY, toY); y <= max(fromY, toY); ++y) {
-                    list.add(new Point(x, y));
+                    list.add(new Point(fromX, y));
                 }
             } else if (isVertical()) {
-                int y = fromY;
                 for (int x = min(fromX, toX); x <= max(fromX, toX); ++x) {
-                    list.add(new Point(x, y));
+                    list.add(new Point(x, fromY));
                 }
             } else {
                 int x = fromX;
@@ -126,9 +126,10 @@ public class Vents {
 
     }
 
-    private class Point {
-        int x;
-        int y;
+    @SuppressWarnings("ClassCanBeRecord")
+    private static class Point {
+        final int x;
+        final int y;
 
         Point(int x, int y) {
             this.x = x;

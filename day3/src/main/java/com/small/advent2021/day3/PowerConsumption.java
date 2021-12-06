@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class PowerConsumption {
-    PowerConsumption(String fileName) {
+    PowerConsumption(@SuppressWarnings("SameParameterValue") String fileName) {
         bitArrayList = getListFromFile(fileName);
         processData();
     }

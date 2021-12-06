@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+@SuppressWarnings("SameParameterValue")
 public class LanternFish {
     private static final Logger log = Logger.getLogger(LanternFish.class);
 
-    private List<Integer> fishList;
-    // TODO -> "private Map<String, Integer> fishCounter;"
+    private Map<String, Long> fishCounter;
 
     LanternFish(String fileName) {
         log.info("Constructor");
@@ -25,42 +25,48 @@ public class LanternFish {
         log.info("Path =  " + path.toAbsolutePath());
         try {
             String s = Files.readString(path);
-            Stream<Integer> si = Arrays.stream(s.trim()
-                            .split(","))
-                    .mapToInt(Integer::parseInt)
-                    .boxed()
-                    ;
-            fishList = si
-                    .toList();
+            fishCounter = Arrays.stream(s.trim().split(","))
+                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
         } catch(IOException e ) {
             log.info(e.getMessage());
         }
-        log.info("done");
     }
 
+    public void displayFishCounter() {
+        for (var entry : fishCounter.entrySet()) {
+            log.info(entry.getKey() + " = " + entry.getValue());
+        }
+    }
 
-    public int countFish() {
-        return fishList.size();
+    public long countFish() {
+        return fishCounter.values()
+                .stream()
+                .mapToLong(Long::longValue)
+                .sum();
     }
 
     public static void main(String[] args) {
         log.info("Begin main");
         LanternFish lanternFish = new LanternFish("input.txt");
-        lanternFish.dayTick(80);
+        lanternFish.displayFishCounter();
+        lanternFish.dayTick(256);
         log.info("Count = " + lanternFish.countFish());
     }
 
     public void dayTick(Integer tick) {
         for (int x = 0; x < tick;++x) {
 
-            List<Integer> newList =  fishList.stream().map(e-> e = e-1).collect(Collectors.toList());
-            List<Integer> newFish = newList.stream()
-                    .filter(e -> e == -1)
-                    .map(e -> 8)
-                    .toList();
-            newList.addAll(newFish);
-            fishList = newList.stream().map(e -> e = (e == -1)?6:e).toList();
-
+            long tmp = fishCounter.getOrDefault("0", 0L);
+            fishCounter.put("0", fishCounter.getOrDefault("1", 0L) );
+            fishCounter.put("1", fishCounter.getOrDefault("2",0L));
+            fishCounter.put("2", fishCounter.getOrDefault("3",0L));
+            fishCounter.put("3", fishCounter.getOrDefault("4",0L));
+            fishCounter.put("4", fishCounter.getOrDefault("5",0L));
+            fishCounter.put("5", fishCounter.getOrDefault("6",0L));
+            fishCounter.put("6", fishCounter.getOrDefault("7",0L) + tmp);
+            fishCounter.put("7", fishCounter.getOrDefault("8",0L));
+            fishCounter.put("8",  tmp);
         }
     }
 }
