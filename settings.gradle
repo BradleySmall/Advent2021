@@ -1,4 +1,8 @@
+rootProject.name = 'Advent2021'
 include 'day1'
 include 'day2'
 include 'day3'
 include 'day4'
+include 'day5'
+include 'day6'
+include 'com.small.advent2021.day7'
