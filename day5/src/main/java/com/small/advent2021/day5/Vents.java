@@ -77,7 +77,6 @@ public class Vents {
         }
 
         List<Point> toPoints() {
-            // TODO: reduce this stuff
             int fromX = Integer.parseInt(pointArray[0]);
             int fromY = Integer.parseInt(pointArray[1]);
             int toX = Integer.parseInt(pointArray[2]);
@@ -93,29 +92,15 @@ public class Vents {
                     list.add(new Point(x, fromY));
                 }
             } else {
-                int x = fromX;
-                int y = fromY;
-                if (fromX < toX) {
-                    if (fromY < toY) {
-                        for(; x <= toX && y <= toY; ++x, ++y) {
-                            list.add(new Point(x, y));
-                        }
-                    } else {
-                        for(; x <= toX && y >= toY; ++x, --y) {
-                            list.add(new Point(x, y));
-                        }
-                    }
-                } else {
-                    if (fromY < toY) {
-                        for(; x >= toX && y <= toY; --x, ++y) {
-                            list.add(new Point(x, y));
-                        }
-                    } else {
-                        for(; x >= toX && y >= toY; --x, --y) {
-                            list.add(new Point(x, y));
-                        }
-                    }
+                int xAddend = (fromX < toX) ? 1 : -1;
+                int yAddend = (fromY < toY) ? 1 : -1;
+
+                for (int x = fromX, y = fromY;
+                        x != (toX + xAddend) && y != (toY + yAddend);
+                        x += xAddend, y += yAddend) {
+                    list.add(new Point(x, y));
                 }
+
             }
             return list;
         }
