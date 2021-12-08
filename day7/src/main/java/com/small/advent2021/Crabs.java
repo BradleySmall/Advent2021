@@ -1,4 +1,4 @@
-package com.small.advent2021.day7;
+package com.small.advent2021;
 
 import lombok.extern.log4j.Log4j;
 

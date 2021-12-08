@@ -1,5 +1,5 @@
-package com.small.advent2021.day1;
-import org.apache.log4j.Logger;
+package com.small.advent2021;
+import lombok.extern.log4j.Log4j;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,29 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Log4j
 public class CountIncreases {
-    private static final Logger LOGGER = Logger.getLogger(CountIncreases.class);
-    public static void main(String[] args) {
-        CountIncreases ci = new CountIncreases();
-        try {
-            int count = ci.countIncreases("day1/input.txt");
-            LOGGER.info("Increases " + count);
-        } catch (FileNotFoundException e) {
-            LOGGER.info(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            int count = ci.countIncreases("day1/input.txt", 3);
-            LOGGER.info("Increases " + count);
-        } catch (FileNotFoundException e) {
-            LOGGER.info(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public int countIncreases(String fileName) throws IOException {
         return count(getListFromFile(fileName));
     }
@@ -53,6 +32,7 @@ public class CountIncreases {
 
     public List<Integer> getListFromFile(String fileName) throws IOException {
         Path path = Path.of(fileName);
+        log.info( path.toAbsolutePath());
         try(Stream<String> lines = Files.lines(path)) {
             return lines
                     .map(Integer::parseInt)
@@ -78,4 +58,24 @@ public class CountIncreases {
         return list;
     }
 
+    public static void main(String[] args) {
+        CountIncreases ci = new CountIncreases();
+        try {
+            int count = ci.countIncreases("input.txt");
+            log.info("Increases " + count);
+        } catch (FileNotFoundException e) {
+            log.info(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            int count = ci.countIncreases("input.txt", 3);
+            log.info("Increases " + count);
+        } catch (FileNotFoundException e) {
+            log.info(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

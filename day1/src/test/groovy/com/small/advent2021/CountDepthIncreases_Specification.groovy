@@ -1,4 +1,4 @@
-package com.small.advent2021.day1
+package com.small.advent2021
 
 import spock.lang.Specification
 

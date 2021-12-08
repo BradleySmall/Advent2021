@@ -1,4 +1,4 @@
-package com.small.advent2021.day5;
+package com.small.advent2021;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.small.advent2021.day5
+package com.small.advent2021
 import spock.lang.Specification
 
 class Vents_Specification extends Specification {

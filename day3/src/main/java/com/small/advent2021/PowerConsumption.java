@@ -1,6 +1,6 @@
-package com.small.advent2021.day3;
+package com.small.advent2021;
 
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,12 +10,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Log4j
 public class PowerConsumption {
     PowerConsumption(@SuppressWarnings("SameParameterValue") String fileName) {
         bitArrayList = getListFromFile(fileName);
         processData();
     }
-    private static final Logger log = Logger.getLogger(PowerConsumption.class);
 
     private final List<int[]> bitArrayList;
 

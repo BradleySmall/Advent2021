@@ -1,4 +1,4 @@
-package com.small.advent2021.day2;
+package com.small.advent2021;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class Submarine {
     public static void main(String[] args) throws IOException {
 
         Submarine sub = new Submarine();
-        List<Command> list = sub.getListFromFile("day2/input.txt");
+        List<Command> list = sub.getListFromFile("input.txt");
         sub.processList(list);
         int position = sub.getPos();
         LOGGER.info("Final Position = " + position);

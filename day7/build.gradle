@@ -3,6 +3,9 @@ plugins {
     id 'java'
 }
 
+apply plugin: 'java'
+apply plugin: 'groovy'
+
 group 'com.small.advent2021'
 version '1.0-SNAPSHOT'
 

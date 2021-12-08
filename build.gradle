@@ -3,26 +3,34 @@ plugins {
     id 'java'
 }
 
-group 'com.small.advent2021'
-version '1.0-SNAPSHOT'
+allprojects {
+    group 'com.small.advent2021'
+    version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
+    }
+
 }
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'groovy'
 
-dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
-    implementation 'org.spockframework:spock-core:2.1-M2-groovy-3.0'
-    implementation 'log4j:log4j:1.2.17'
+    group 'com.small.advent2021'
+    version '1.0-SNAPSHOT'
 
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    dependencies {
+        implementation 'org.codehaus.groovy:groovy-all:3.0.8'
+        implementation 'org.spockframework:spock-core:2.1-M2-groovy-3.0'
+        implementation 'log4j:log4j:1.2.17'
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.22'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
-}
-apply plugin: 'java'
+        compileOnly 'org.projectlombok:lombok:1.18.22'
+        annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-repositories {
-    mavenCentral()
+        testCompileOnly 'org.projectlombok:lombok:1.18.22'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+    }
+    test {
+        useJUnitPlatform()
+    }
 }
