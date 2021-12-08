@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day1 - CountIncreases" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.CountIncreases" />
+    <module name="Advent2021.day1.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/day1" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

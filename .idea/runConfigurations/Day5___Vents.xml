@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day5 - Vents" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.Vents" />
+    <module name="Advent2021.day5.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/day5" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day4 - Bingo" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.Bingo" />
+    <module name="Advent2021.day4.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/day4" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

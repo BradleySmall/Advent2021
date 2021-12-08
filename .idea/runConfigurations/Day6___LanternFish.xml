@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day6 - LanternFish" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.LanternFish" />
+    <module name="Advent2021.day6.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/day6" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

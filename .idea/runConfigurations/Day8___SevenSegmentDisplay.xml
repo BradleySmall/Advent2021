@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day8 - SevenSegmentDisplay" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.SevenSegmentDisplay" />
+    <module name="Advent2021.day8.main" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.small.advent2021.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

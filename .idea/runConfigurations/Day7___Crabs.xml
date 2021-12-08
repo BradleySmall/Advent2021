@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day7 - Crabs" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.Crabs" />
+    <module name="Advent2021.day7.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/day7" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

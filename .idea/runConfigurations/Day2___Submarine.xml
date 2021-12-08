@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day2 - Submarine" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2021.Submarine" />
+    <module name="Advent2021.day2.main" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/day2" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
