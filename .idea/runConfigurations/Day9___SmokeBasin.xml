@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Day9 - SmokeBasin" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.small.advent2001.SmokeBasin" />
+    <module name="Advent2021.day9.main" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.small.advent2001.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
