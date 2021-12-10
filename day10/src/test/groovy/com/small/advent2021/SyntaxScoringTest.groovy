@@ -8,32 +8,34 @@ class SyntaxScoringTest extends Specification {
         syntaxScoring = new SyntaxScoring("input_test.txt")
     }
 
-    def "should test all"() {
+    def "should show middle score"() {
         expect:
-        26397 == syntaxScoring.getScore()
+        5566L == syntaxScoring.getTotalScore()
     }
-    def "should test for me"() {
+    def "should get incomplete score"() {
         expect:
-        1 ==  syntaxScoring.scoreLine("{}}")
+        288957L == syntaxScoring.getIncompleteScore()
     }
-    def "should test line"() {
+    def "should get corrupt score"() {
+        expect:
+        26397L == syntaxScoring.getCorruptScore()
+    }
+    def "should test incomplete line"() {
+        when:
+
+        String line = syntaxScoring.showGetLine(0)
+        long score = syntaxScoring.scoreIncompleteLine(line)
+
+        then:
+        288957L == score
+    }
+    def "should test corrupt line"() {
         when:
 
         String line = syntaxScoring.showGetLine(2)
-        int score = syntaxScoring.scoreLine(line)
+        long score = syntaxScoring.scoreCorruptLine(line)
 
         then:
-        0 == score
-    }
-    def "should have good line"() {
-        expect:
-        "[({(<(())[]>[[{[]{<()<>>" == syntaxScoring.showGetLine(0)
-
-    }
-
-    def "should create object"() {
-
-        expect:
-        syntaxScoring.class.toString() == "class com.small.advent2021.SyntaxScoring"
+        1197L == score
     }
 }
