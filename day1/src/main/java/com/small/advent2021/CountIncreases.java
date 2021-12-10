@@ -1,4 +1,5 @@
 package com.small.advent2021;
+
 import lombok.extern.log4j.Log4j;
 
 import java.io.FileNotFoundException;
