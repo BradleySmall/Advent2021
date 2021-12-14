@@ -12,7 +12,10 @@ import static java.lang.String.format;
 
 @Slf4j
 public class PassagePathing {
-    private class Pair<T, T1> {
+
+    public static final String START = "start";
+
+    private static class Pair<T, T1> {
         Pair(T f, T1 t) {
             from = f;
             to = t;
@@ -36,7 +39,7 @@ public class PassagePathing {
             return Objects.hash(from, to);
         }
     }
-    private class Node {
+    private static class Node {
         String room;
         List<Node> doors = new ArrayList<>();
         int visited = 1;
@@ -58,12 +61,12 @@ public class PassagePathing {
         try(Stream<String> s = Files.lines(path)) {
             segments = s
                     .map(str -> str.split("-"))
-                    .map(sub -> new Pair<String, String>(sub[0], sub[1]))
+                    .map(sub -> new Pair<>(sub[0], sub[1]))
                     .toList();
             populateDistinctRooms();
             populateLegs();
 
-            tree = buildNode("start", new HashSet<Node>());
+            tree = buildNode(START, new HashSet<>());
             makePaths();
             log.debug("done");
         } catch (IOException e) {
@@ -72,7 +75,7 @@ public class PassagePathing {
         }
     }
     private void populateDistinctRooms() {
-        distinctRooms = new HashSet<String>();
+        distinctRooms = new HashSet<>();
         for (var p : segments) {
             distinctRooms.add(p.from);
             distinctRooms.add(p.to);
@@ -102,71 +105,73 @@ public class PassagePathing {
     List<Pair<String, String>> getLeg(String start) {
         List<Pair<String, String>> segs = new ArrayList<>();
         for (var seg : segments) {
-            if (seg.from.equals(start)) {
-                if (seg.to.equals("start") || seg.from.equals("end")) {
-                    continue;
-                }
-                segs.add(new Pair(seg.from, seg.to));
-            }
-            if (seg.to.equals(start)) {
-                if (seg.from.equals("start") || seg.to.equals("end")) {
-                    continue;
-                }
-                segs.add(new Pair(seg.to, seg.from));
+            if (seg.from.equals(start) && !seg.to.equals(START) && !seg.from.equals("end")) {
+                segs.add(new Pair<>(seg.from, seg.to));
+            } else if (seg.to.equals(start) && !seg.from.equals(START) && !seg.to.equals("end")) {
+                segs.add(new Pair<>(seg.to, seg.from));
             }
         }
         return segs;
     }
 
     public static void main(String[] args) {
-        PassagePathing passagePathing = new PassagePathing("day12/input_test_3.txt");
+        PassagePathing passagePathing = new PassagePathing("day12/input_test.txt");
+        log.info("done");
     }
 
     void makePaths () {
 
         List<String> paths = new ArrayList<>();
-        makePathsRecursiveHelper(tree, paths, new HashSet<Node>(), new StringBuilder());
+        makePathsRecursiveHelper(tree, paths, new HashSet<>(), new StringBuilder());
         log.info("done count=("+paths.size() +") " + paths);
-        //log.info("done count=("+paths.size() +") ");
     }
 
 
-    private String makePathsRecursiveHelper(Node node, List<String> paths, HashSet<Node> dontReturn, StringBuilder sb) {
+    private void makePathsRecursiveHelper(Node node, List<String> paths, HashSet<Node> dontReturn, StringBuilder sb) {
         StringBuilder localSb = new StringBuilder();
-        HashSet<Node> localDontReturn = new HashSet<>();
-        localDontReturn.addAll(dontReturn);
 
-        if (isDontReturn(node, localDontReturn)) {
-            return "";
-        }
+        HashSet<Node> localDontReturn = new HashSet<>(dontReturn);
+        localSb.append(sb);
 
-        if (node.room.equals("start") ) {
-            dontReturn.clear();
-            localSb.append(node.room+",");
-            for (Node room : node.doors) {
-                localSb.append(makePathsRecursiveHelper(room, paths, localDontReturn, localSb));
+        if (!isDontReturn(node, localDontReturn)) {
+
+            if (node.room.equals(START)) {
+                localDontReturn.clear();
+                dontReturn.clear();
+                localSb.append(node.room + ",");
+                for (Node room : node.doors) {
+                    makePathsRecursiveHelper(room, paths, localDontReturn, localSb);
+                }
+            } else if (node.room.equals("end")) {
+                localSb.append(node.room);
+                paths.add(localSb.toString());
+            } else {
+
+                if (Character.isLowerCase(node.room.charAt(0)) && !node.room.equals("end") && !node.room.equals(START)) {
+                    addOrBump(localDontReturn, node);
+                }
+
+                if (!isDontReturn(node, localDontReturn)) {
+                    localSb.append(node.room + ",");
+                    for (Node room : node.doors) {
+                        makePathsRecursiveHelper(room, paths, localDontReturn, localSb);
+                    }
+                }
             }
-            return "";
+        }
+    }
+
+    private void addOrBump(HashSet<Node> dontReturn, Node node) {
+        Node retRoom = dontReturn.stream()
+                .filter(n -> n.room.equals(node.room))
+                .findFirst()
+                .orElse(null);
+        if (retRoom == null) {
+            node.visited = 1;
+            dontReturn.add(node);
         } else {
-            localSb.append(sb);
+            retRoom.visited += 1;
         }
-        if (node.room.equals("end")) {
-            localSb.append(node.room);
-            paths.add(localSb.toString());
-            return "";
-        }
-
-        if (Character.isLowerCase(node.room.charAt(0))) {
-            //node.visited = 1;
-            localDontReturn.add(node);
-        }
-        localSb.append(node.room+",");
-        for (Node room : node.doors) {
-            if (!isDontReturn(room, localDontReturn)) {
-                localSb.append(makePathsRecursiveHelper(room, paths, localDontReturn, localSb));
-            }
-        }
-        return "";
     }
 
     private boolean isDontReturn(Node node, HashSet<Node> dontReturn) {
@@ -174,22 +179,11 @@ public class PassagePathing {
                 .filter(n -> n.room.equals(node.room))
                 .findFirst()
                 .orElse(null);
-        return retRoom != null;
-    }
-
-    private List<List<Pair<String, String>>> getAllPathsForLeg(Pair<String, String> leg) {
-        List<List<Pair<String, String>>> paths = new ArrayList<>();
-        for(List<Pair<String, String>> list : legs) {
-           for (Pair<String, String> l : list) {
-               if (l.from.equals(leg.to)) {
-                   List<Pair<String, String>> path = new ArrayList<>();
-                   path.add(leg);
-                   path.add(l);
-                   paths.add(path);
-               }
-           }
+        if (retRoom == null) {
+            return false;
+        } else {
+            return retRoom.visited > 2;
         }
-        return paths;
     }
 
     private List<String> getDoorsForRoom(String roomName) {
@@ -201,8 +195,7 @@ public class PassagePathing {
     }
 
     private Node buildNode(String roomName, Set<Node> returnRoom) {
-        Set<Node> usedRooms = new HashSet<>();
-        usedRooms.addAll(returnRoom);
+        Set<Node> usedRooms = new HashSet<>(returnRoom);
 
         Node node = new Node();
         node.room = roomName;
