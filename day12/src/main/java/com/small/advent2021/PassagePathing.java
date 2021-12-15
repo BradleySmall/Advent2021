@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -14,6 +16,12 @@ import static java.lang.String.format;
 public class PassagePathing {
 
     public static final String START = "start";
+    public static final String END = "end";
+    private List<String> paths;
+
+    public Integer getCount() {
+        return paths.size();
+    }
 
     private static class Pair<T, T1> {
         Pair(T f, T1 t) {
@@ -42,7 +50,7 @@ public class PassagePathing {
     private static class Node {
         String room;
         List<Node> doors = new ArrayList<>();
-        int visited = 1;
+        int visited = 0;
     }
 
     List<Pair<String, String>> segments;
@@ -70,7 +78,7 @@ public class PassagePathing {
             makePaths();
             log.debug("done");
         } catch (IOException e) {
-            log.info(e.getMessage());
+            log.debug(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -105,85 +113,89 @@ public class PassagePathing {
     List<Pair<String, String>> getLeg(String start) {
         List<Pair<String, String>> segs = new ArrayList<>();
         for (var seg : segments) {
-            if (seg.from.equals(start) && !seg.to.equals(START) && !seg.from.equals("end")) {
+            if (seg.from.equals(start) && !seg.to.equals(START) && !seg.from.equals(END)) {
                 segs.add(new Pair<>(seg.from, seg.to));
-            } else if (seg.to.equals(start) && !seg.from.equals(START) && !seg.to.equals("end")) {
+            } else if (seg.to.equals(start) && !seg.from.equals(START) && !seg.to.equals(END)) {
                 segs.add(new Pair<>(seg.to, seg.from));
             }
         }
         return segs;
     }
 
-    public static void main(String[] args) {
-        PassagePathing passagePathing = new PassagePathing("day12/input_test.txt");
-        log.info("done");
-    }
-
     void makePaths () {
 
-        List<String> paths = new ArrayList<>();
-        makePathsRecursiveHelper(tree, paths, new HashSet<>(), new StringBuilder());
-        log.info("done count=("+paths.size() +") " + paths);
+        paths = new ArrayList<>();
+        makePathsRecursiveHelper(tree, paths, new ArrayList<>(), new StringBuilder());
+        log.debug("done count=("+ paths.size() +") " + paths);
     }
 
 
-    private void makePathsRecursiveHelper(Node node, List<String> paths, HashSet<Node> dontReturn, StringBuilder sb) {
-        StringBuilder localSb = new StringBuilder();
+    private void makePathsRecursiveHelper(Node node, List<String> paths, ArrayList<Node> visitedSmallRooms, StringBuilder sb) {
 
-        HashSet<Node> localDontReturn = new HashSet<>(dontReturn);
-        localSb.append(sb);
+        if (isAlreadyVisited(node, visitedSmallRooms)) {
+            return;
+        }
 
-        if (!isDontReturn(node, localDontReturn)) {
+        if (node.room.equals(START)) {
+            log.debug("Node == START");
+            sb.append(node.room).append(",");
+            for (Node room : node.doors) {
+                makePathsRecursiveHelper(room, paths, new ArrayList<>(visitedSmallRooms), new StringBuilder(sb));
+            }
+            log.debug("After looping doors START " + sb);
+            log.debug("Paths  "+paths);
+            log.info("Paths count "+paths.size());
+            return;
+        }
+        if (node.room.equals(END)) {
+            sb.append(node.room);
+            paths.add(sb.toString());
+            log.debug("After adding path " + sb);
+            visitedSmallRooms.clear();
+            log.debug("Clearing At the END");
+            return;
+        }
 
-            if (node.room.equals(START)) {
-                localDontReturn.clear();
-                dontReturn.clear();
-                localSb.append(node.room + ",");
-                for (Node room : node.doors) {
-                    makePathsRecursiveHelper(room, paths, localDontReturn, localSb);
-                }
-            } else if (node.room.equals("end")) {
-                localSb.append(node.room);
-                paths.add(localSb.toString());
-            } else {
+        if (isAlreadyVisited(node, visitedSmallRooms)) {
+            return;
+        }
 
-                if (Character.isLowerCase(node.room.charAt(0)) && !node.room.equals("end") && !node.room.equals(START)) {
-                    addOrBump(localDontReturn, node);
-                }
+        addOrBump(visitedSmallRooms, node);
 
-                if (!isDontReturn(node, localDontReturn)) {
-                    localSb.append(node.room + ",");
-                    for (Node room : node.doors) {
-                        makePathsRecursiveHelper(room, paths, localDontReturn, localSb);
-                    }
-                }
+        log.debug("Before looping doors " + sb + " node " + node.room);
+        if (!isAlreadyVisited(node, visitedSmallRooms)) {
+            sb.append(node.room).append(",");
+            for (Node room : node.doors) {
+                makePathsRecursiveHelper(room, paths, new ArrayList<>(visitedSmallRooms), new StringBuilder(sb));
             }
         }
     }
 
-    private void addOrBump(HashSet<Node> dontReturn, Node node) {
-        Node retRoom = dontReturn.stream()
-                .filter(n -> n.room.equals(node.room))
-                .findFirst()
-                .orElse(null);
-        if (retRoom == null) {
-            node.visited = 1;
-            dontReturn.add(node);
-        } else {
-            retRoom.visited += 1;
+    private boolean isSmallRoom(Node node) {
+        return Character.isLowerCase(node.room.charAt(0))
+                && !node.room.equals(END);
+    }
+
+    private void addOrBump(ArrayList<Node> visitedSmallRooms, Node node) {
+        if (isSmallRoom(node)) {
+            visitedSmallRooms.add(node);
         }
     }
 
-    private boolean isDontReturn(Node node, HashSet<Node> dontReturn) {
-        Node retRoom = dontReturn.stream()
-                .filter(n -> n.room.equals(node.room))
-                .findFirst()
-                .orElse(null);
-        if (retRoom == null) {
+    private boolean isAlreadyVisited(Node node, ArrayList<Node> visitedSmallRooms) {
+        ConcurrentMap<String, Long> map = visitedSmallRooms.stream()
+                .collect(Collectors.groupingByConcurrent(e -> e.room, Collectors.counting()));
+        log.debug(String.valueOf(map));
+        long curCount = map.getOrDefault(node.room, 0L);
+        long dblCount = map.values().stream().filter(e -> e >= 2).count();
+
+        if (curCount < 2L) {
             return false;
-        } else {
-            return retRoom.visited > 2;
         }
+        if (curCount > 2L) {
+            return true;
+        }
+        return dblCount > 1;
     }
 
     private List<String> getDoorsForRoom(String roomName) {
@@ -202,7 +214,10 @@ public class PassagePathing {
         var doors = getDoorsForRoom(roomName);
 
         for (String door : doors) {
-            var retRoom = usedRooms.stream().filter(r -> r.room.equals(door)).findFirst().orElse(null);
+            var retRoom = usedRooms .stream()
+                    .filter(r -> r.room.equals(door))
+                    .findFirst()
+                    .orElse(null);
 
             if (retRoom == null) {
                 usedRooms.add(node);
@@ -212,5 +227,9 @@ public class PassagePathing {
             }
         }
         return node;
+    }
+
+    public static void main(String[] args) {
+        log.info("done");
     }
 }
