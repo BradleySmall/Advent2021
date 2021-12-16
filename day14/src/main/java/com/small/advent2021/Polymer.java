@@ -21,6 +21,10 @@ public class Polymer {
     private String polymerTemplate;
     private Map<String, String> pairInsertionRules;
     private String polymerString;
+    private Map<String, Long> cntMap;
+    private Long polymerLength;
+    private long maxElement;
+    private long minElement;
 
     public Polymer(String fileName) {
         processFile(fileName);
@@ -58,73 +62,58 @@ public class Polymer {
     }
 
     public void performPassWithMap(int passes) {
-        Map<String, Long> cntMap = new HashMap<>();
+        cntMap = new HashMap<>();
         Map<String, Long> polymerPairs = new HashMap<>();
         for(int index = 0; index < polymerTemplate.length() - 1; ++index) {
-            String lS = polymerString.substring(index, index + 1);
-            String rS = polymerString.substring(index + 1, index + 2);
+            String lS = polymerTemplate.substring(index, index + 1);
+            String rS = polymerTemplate.substring(index + 1, index + 2);
             String pair = lS + rS;
 
-            addToCntMap(cntMap, lS, 1L);
+            addToCountedMap(cntMap, lS, 1L);
             if (index == polymerTemplate.length()-2) {
-                addToCntMap(cntMap, rS, 1L);
+                addToCountedMap(cntMap, rS, 1L);
             }
             polymerPairs.put(pair, polymerPairs.getOrDefault(pair,0L)+1L);
         }
-        log.info("Pass #" + 0 + " \n"+polymerPairs.toString());
+        log.debug("Pass #" + 0 + " \n"+ polymerPairs);
         log.debug(polymerPairs.toString());
-        log.info("CntMap "+cntMap.toString());
+        log.debug("CntMap "+ cntMap.toString());
 
-        IntStream.range(1, passes+1).forEach(pass -> {
+        for (int pass = 1; pass <= passes; pass++) {
             var changesMap = new HashMap<String, Long>();
-
-            for( var pair : new HashSet<>(polymerPairs.entrySet())) {
+            for (var pair : polymerPairs.entrySet()) {
                 var key = pair.getKey();
                 var value = pair.getValue();
-                if (value == 0L) {
-                    continue;
-                }
+
                 String insertionElement = pairInsertionRules.getOrDefault(key, "");
-                if (insertionElement.equals("")) {
+                if (insertionElement.equals("") || value == 0L) {
                     continue;
                 }
-                var sp = pair.getKey().split("");
-                var newPairL = sp[0] + insertionElement;
-                var newPairR = insertionElement + sp[1];
+                var splitPair = key.split("");
+                var newPairL = splitPair[0] + insertionElement;
+                var newPairR = insertionElement + splitPair[1];
 
-                addToCntMap(cntMap, insertionElement, value);
+                addToCountedMap(cntMap, insertionElement, value);
 
-                changesMap.put(newPairL, value);
-                changesMap.put(newPairR, value);
-                changesMap.put(key, -value);
+                addToCountedMap(changesMap, newPairL, value);
+                addToCountedMap(changesMap, newPairR, value);
             }
-            changesMap.forEach(
-                    (key, value) -> polymerPairs.merge(key, value, Long::sum)
-                    );
-            polymerPairs.values().removeIf(val -> val == 0);
-
-            log.info("Pass #" + pass + " \n"+polymerPairs.toString());
-            log.info("CntMap "+cntMap.toString());
-            log.info("Length " + cntMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-        });
-    }
-
-    private void addToCntMap(Map<String, Long> cntMap, String keyName, long count) {
-        cntMap.put(keyName, cntMap.getOrDefault(keyName, 0L) + count);
-    }
-
-    private void countElements(Map<String, Long> polymerPairs) {
-        Map<String, Long> cntMap = new HashMap<>();
-        for(var p : polymerPairs.entrySet()) {
-            var pair = p.getKey().split("");
-            cntMap.put(pair[0], cntMap.getOrDefault(pair[0], 0L)+p.getValue());
-            cntMap.put(pair[1], cntMap.getOrDefault(pair[1], 0L)+p.getValue());
+            polymerPairs.clear();
+            polymerPairs.putAll(changesMap);
+            polymerLength = cntMap.values().stream().mapToLong(Long::longValue).sum();
+            maxElement = cntMap.values().stream().max(Comparator.comparingLong(Long::longValue)).orElse(0L);
+            minElement = cntMap.values().stream().min(Comparator.comparingLong(Long::longValue)).orElse(0L);
+            log.debug("Pass #" + pass + " \n" + polymerPairs);
+            log.debug("CntMap " + cntMap.toString());
+            log.debug("Length " + polymerLength);
         }
-
-        log.info(cntMap.toString());
     }
 
-    public void performPass(int passes) {
+    private void addToCountedMap(Map<String, Long> map, String keyName, long count) {
+        map.put(keyName, map.getOrDefault(keyName, 0L) + count);
+    }
+
+    public void performPassWithPolymerString(int passes) {
         polymerString = polymerTemplate;
         IntStream.range(0, passes).forEach(z -> {
             StringBuilder sb = new StringBuilder();
@@ -143,7 +132,7 @@ public class Polymer {
         });
     }
 
-    public long showMostMinusLeast() {
+    public long showMostMinusLeastFromPolymerString() {
         var tmp = Arrays.stream(polymerString
                         .split(""))
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
@@ -157,5 +146,24 @@ public class Polymer {
         }
 
         return maxCount - minCount;
+    }
+
+    public long getLength() {
+        return polymerLength;
+    }
+
+    public long getCount(String key) {
+        return cntMap.get(key);
+    }
+
+    public long getMinCount() {
+        return minElement;
+    }
+    public long getMaxCount() {
+        return maxElement;
+    }
+
+    public long getMaxMinusMin() {
+        return maxElement - minElement;
     }
 }
