@@ -153,22 +153,23 @@ public class Packet {
     }
 
     private void processOpCode(String version, long literalValue, int packetCount, String opCode) {
-        if (opCode.equals("LIT")) {
-            stack.push(literalValue);
-            log.info(String.format(PUSH_D, literalValue));
-        } else {
-            log.info(String.format("POP V:%s T:%s packet count %d", version, opCode, packetCount));
-            switch (opCode) {
-                case "SUM" -> doSUM(packetCount);
-                case "PRD" -> doPRD(packetCount);
-                case "MIN" -> doMIN(packetCount);
-                case "MAX" -> doMAX(packetCount);
-                case "GT " -> doGT();
-                case "LT " -> doLT();
-                case "EQ " -> doEQ();
-                default -> throw new IllegalStateException("Unexpected value: " + opCode);
-            }
+        log.info(String.format("PERFORM V:%s T:%s packet count %d", version, opCode, packetCount));
+        switch (opCode) {
+            case "LIT" -> doLIT(literalValue);
+            case "SUM" -> doSUM(packetCount);
+            case "PRD" -> doPRD(packetCount);
+            case "MIN" -> doMIN(packetCount);
+            case "MAX" -> doMAX(packetCount);
+            case "GT " -> doGT();
+            case "LT " -> doLT();
+            case "EQ " -> doEQ();
+            default -> throw new IllegalStateException("Unexpected value: " + opCode);
         }
+    }
+
+    private void doLIT(long literalValue) {
+        stack.push(literalValue);
+        log.info(String.format(PUSH_D, literalValue));
     }
 
     private void doEQ() {
@@ -299,16 +300,15 @@ public class Packet {
 
     private String readLiteral(String packet, List<String> pieces) {
         // walk every 5 bits looking for 0 and the next 4 bits end the packet
-        int packetPtr = 0;
         boolean isLast;
         do {
-            isLast = packet.charAt(packetPtr) == '0';
-            ++packetPtr;
-            pieces.add(encodeMap.get(packet.substring(packetPtr, packetPtr + 4)));
-            packetPtr += 4;
+            isLast = packet.charAt(0) == '0';
+            packet = packet.substring(1);
+            pieces.add(encodeMap.get(packet.substring(0, 4)));
+            packet = packet.substring(4);
         } while (!isLast);
 
-        return packet.substring(packetPtr);
+        return packet;
     }
 
     public static void main(String[] args) {
