@@ -1,5 +1,6 @@
 package com.small.advent2021;
-import org.apache.log4j.Logger;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,9 +8,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-
+@Slf4j
 public class Submarine {
-    private static final Logger LOGGER = Logger.getLogger(Submarine.class);
 
     private int horizontalPosition = 0;
     private int depth = 0;
@@ -21,7 +21,7 @@ public class Submarine {
         List<Command> list = sub.getListFromFile("input.txt");
         sub.processList(list);
         int position = sub.getPos();
-        LOGGER.info("Final Position = " + position);
+        log.info("Final Position = " + position);
     }
 
     public int getHorizontalPosition() {

@@ -1,7 +1,6 @@
 package com.small.advent2021;
 
-
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,9 +11,9 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+@Slf4j
 public class Bingo {
 
-    private static final Logger log = Logger.getLogger(Bingo.class);
     private BallCall ballCall;
     private Cards cards;
 

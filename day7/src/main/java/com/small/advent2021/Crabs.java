@@ -1,6 +1,7 @@
 package com.small.advent2021;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,7 +10,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Log4j
+@Slf4j
 public class Crabs {
 
     private Map<String, Long> fishCounter;

@@ -1,6 +1,7 @@
 package com.small.advent2001;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +9,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
-@Log4j
+@Slf4j
 public class SmokeBasin {
 
     private int[][] matrix;
@@ -72,7 +73,7 @@ public class SmokeBasin {
             }
         }
         log.info("LowPoint Count = " + lowPoints + " RiskLevel =" + riskLevel);
-        log.info(basinList.stream().sorted().toList());
+        log.info(basinList.stream().sorted().toList().toString());
         return lowPoints;
 
     }

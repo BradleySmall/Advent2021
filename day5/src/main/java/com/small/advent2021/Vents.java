@@ -1,5 +1,6 @@
 package com.small.advent2021;
-import org.apache.log4j.Logger;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,9 +13,8 @@ import java.util.stream.Stream;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+@Slf4j
 public class Vents {
-
-    private static final Logger log = Logger.getLogger(Vents.class);
     private List<LineSegment> lineList;
     private Map<Point, Long> matrix;
 

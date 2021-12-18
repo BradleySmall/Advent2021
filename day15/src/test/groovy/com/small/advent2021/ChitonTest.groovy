@@ -14,6 +14,6 @@ class ChitonTest extends Specification {
         then:
         expect:
         //chiton.score2StepPaths() == 4854L
-        chiton.tryWalk() == 0L
+        chiton.tryWalk() == 40L
     }
 }

@@ -32,7 +32,7 @@ class PacketTest extends Specification {
         packet.decodePacket(packetTxt, versions)
         expect:
         versions.size() == 1
-        versions.toString() == "110"
+        versions.toString() == "[110]"
 
     }
     def "should decode to binary" () {

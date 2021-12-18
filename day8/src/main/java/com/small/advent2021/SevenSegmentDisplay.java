@@ -1,6 +1,6 @@
 package com.small.advent2021;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
-@Log4j
+@Slf4j
 public class SevenSegmentDisplay {
     final List<String> valueList = new ArrayList<>();
     /*
@@ -144,7 +144,7 @@ public class SevenSegmentDisplay {
 
     public static void main(String[] args) {
         SevenSegmentDisplay sevenSegmentDisplay = new SevenSegmentDisplay("day8/input.txt");
-        log.info(sevenSegmentDisplay.valueList);
+        log.info(sevenSegmentDisplay.valueList.toString());
         log.info("Total = " + sevenSegmentDisplay.total());
     }
 }

@@ -1,6 +1,6 @@
 package com.small.advent2021;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,9 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("SameParameterValue")
+@Slf4j
 public class LanternFish {
-    private static final Logger log = Logger.getLogger(LanternFish.class);
-
     private Map<String, Long> fishCounter;
 
     LanternFish(String fileName) {

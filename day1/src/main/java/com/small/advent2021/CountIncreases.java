@@ -1,6 +1,7 @@
 package com.small.advent2021;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Log4j
+@Slf4j
 public class CountIncreases {
+
     public int countIncreases(String fileName) throws IOException {
         return count(getListFromFile(fileName));
     }
@@ -33,7 +35,7 @@ public class CountIncreases {
 
     public List<Integer> getListFromFile(String fileName) throws IOException {
         Path path = Path.of(fileName);
-        log.info( path.toAbsolutePath());
+        log.info( path.toAbsolutePath().toString());
         try(Stream<String> lines = Files.lines(path)) {
             return lines
                     .map(Integer::parseInt)

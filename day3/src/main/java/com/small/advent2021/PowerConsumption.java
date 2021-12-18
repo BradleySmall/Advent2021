@@ -1,6 +1,7 @@
 package com.small.advent2021;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Log4j
+@Slf4j
 public class PowerConsumption {
     PowerConsumption(@SuppressWarnings("SameParameterValue") String fileName) {
         bitArrayList = getListFromFile(fileName);
