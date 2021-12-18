@@ -11,7 +11,8 @@ class PacketTest extends Specification {
         var versions = packet.processPackets()
         then:
         versions.size() == 268
-
+        packet.stack.size() == 1
+        packet.publicShowAnswer() == "912901337844"
     }
     def "should decode multiple packets"() {
         given:
