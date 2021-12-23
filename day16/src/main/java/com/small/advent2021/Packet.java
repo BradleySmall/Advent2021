@@ -11,64 +11,30 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 import static java.util.Map.*;
 
-/*
-0 = 0000
-1 = 0001
-2 = 0010
-3 = 0011
-4 = 0100
-5 = 0101
-6 = 0110
-7 = 0111
-8 = 1000
-9 = 1001
-A = 1010
-B = 1011
-C = 1100
-D = 1101
-E = 1110
-F = 1111
- */
-/*
-000 - 0 - sum
-001 - 1 - product
-010 - 2 - minimum
-011 - 3 - maximum
-101 - 4 - literal
-101 - 5 - gt
-110 - 6 - lt
-111 - 7 - eq
- */
-
 @Slf4j
 public class Packet {
     public static final String PUSH_D = "PUSH (%d)";
     Deque<Long> stack = new ArrayDeque<>();
-    String xlate = "0 = 0000, 1 = 0001, 2 = 0010, 3 = 0011, 4 = 0100, 5 = 0101, 6 = 0110, 7 = 0111, 8 = 1000, 9 = 1001, A = 1010, B = 1011, C = 1100, D = 1101, E = 1110, F = 1111";
     private final Map<String, String> translateMap;
     private final Map<String, String> encodeMap;
-    private final Map<String, String> operatorsMap =
-            Map.of( "000", "SUM",
-                    "001", "PRD",
-                    "010", "MIN",
-                    "011", "MAX",
-                    "100", "LIT",
-                    "101", "GT ",
-                    "110", "LT ",
-                    "111", "EQ ");
+    private final Map<String, String> operatorsMap;
     private String packetString;
 
     public String publicShowAnswer() {
         return stack.getFirst().toString();
     }
 
-    Packet(String fileName) {
+    private Packet() {
+        String translateStrings =
+                "0 = 0000, 1 = 0001, 2 = 0010, 3 = 0011, " +
+                        "4 = 0100, 5 = 0101, 6 = 0110, 7 = 0111, " +
+                        "8 = 1000, 9 = 1001, A = 1010, B = 1011, " +
+                        "C = 1100, D = 1101, E = 1110, F = 1111";
         translateMap =
-                stream(xlate.split(", "))
+                stream(translateStrings.split(", "))
                         .map(entry -> entry.split(" = "))
                         .collect(Collectors.toMap(rule -> rule[0], rule -> rule[1]));
         log.debug(String.valueOf(translateMap));
-
 
         encodeMap = translateMap
                 .entrySet()
@@ -76,6 +42,20 @@ public class Packet {
                 .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
         log.debug(String.valueOf(encodeMap));
 
+        operatorsMap =
+                Map.of("000", "SUM",
+                        "001", "PRD",
+                        "010", "MIN",
+                        "011", "MAX",
+                        "100", "LIT",
+                        "101", "GT ",
+                        "110", "LT ",
+                        "111", "EQ ");
+        log.debug(String.valueOf(operatorsMap));
+    }
+
+    Packet(String fileName) {
+        this();
         processFile(fileName);
     }
 
@@ -87,9 +67,10 @@ public class Packet {
         }
         var total = versions
                 .stream()
-                .mapToInt(v -> Integer.parseInt(v,2))
+                .mapToInt(v -> Integer.parseInt(v, 2))
                 .sum();
         log.info(String.valueOf(total));
+
         return versions;
     }
 
@@ -128,7 +109,7 @@ public class Packet {
         if (operator.equals("100")) { // literal number
             List<String> pieces = new ArrayList<>();
             packet = readLiteral(packet, pieces);
-            literalValue = Long.parseLong(String.join("", pieces),16);
+            literalValue = Long.parseLong(String.join("", pieces), 16);
             log.debug(String.format("V:%s T:%s (%d)", version, opCode, literalValue));
         } else {
             String lengthId = packet.substring(0, 1);
@@ -274,7 +255,7 @@ public class Packet {
         packetCount.add(count);
         for (int x = 0; x < count; ++x) {
             packet = decodePacket(packet, versions);
-            log.info("PACKET "+ x);
+            log.info("PACKET " + x);
         }
         return packet;
     }
@@ -288,8 +269,8 @@ public class Packet {
         packet = packet.substring(length);
 
         int count = 0;
-        while(subPacket.length() != 0) {
-            log.info("PACKETL "+ count);
+        while (subPacket.length() != 0) {
+            log.info("PACKETL " + count);
             ++count;
             subPacket = decodePacket(subPacket, versions);
         }
