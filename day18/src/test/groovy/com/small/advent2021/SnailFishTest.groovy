@@ -23,8 +23,7 @@ class SnailFishTest extends Specification {
         SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[5,0],[7,4]],[5,5]],[6,6]]")
 
-        n1 = n1.reduce()
-        n1 = n1.reduce()
+        n1 = n1.explodeIfNeeded().explodeIfNeeded().explodeIfNeeded().explodeIfNeeded().explodeIfNeeded()
         expect:
         n2 == n1
 
@@ -41,7 +40,7 @@ class SnailFishTest extends Specification {
         SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[3,0],[5,3]],[4,4]],[5,5]]")
 
-        n1 = n1.reduce().reduce()
+        n1 = n1.explodeIfNeeded().explodeIfNeeded()
         expect:
         n2 == n1
 
@@ -71,7 +70,7 @@ class SnailFishTest extends Specification {
         expect:
         n2 == n1.splitReduce()
         n3 == n2.splitReduce()
-        n4 == n3.reduce()
+        n4 == n3.explodeIfNeeded()
     }
 
     def "should reduce fifth example number"() {
@@ -82,7 +81,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.reduce()
+        n2 == n1.explodeIfNeeded()
     }
 
     def "should reduce a fourth number"() {
@@ -92,7 +91,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.reduce()
+        n2 == n1.explodeIfNeeded()
     }
 
     def "should reduce a third number"() {
@@ -102,7 +101,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.reduce()
+        n2 == n1.explodeIfNeeded()
     }
 
     def "should reduce a second number"() {
@@ -112,7 +111,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.reduce()
+        n2 == n1.explodeIfNeeded()
     }
 
     def "should reduce a number"() {
@@ -122,7 +121,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.reduce()
+        n2 == n1.explodeIfNeeded()
     }
 
     def "should add 2 numbers"() {

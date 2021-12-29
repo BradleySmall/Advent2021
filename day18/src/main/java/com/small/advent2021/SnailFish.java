@@ -2,10 +2,10 @@ package com.small.advent2021;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
@@ -16,19 +16,84 @@ public class SnailFish {
     }
 
     public static class Number {
-        private final String str;
+        private String str;
 
         public Number(String str) {
             this.str = str;
         }
 
-        private static Number numberFromStack(StringBuilder sb, Deque<String> stack) {
-            if (stack.peek() != null && stack.peek().equals(",")) stack.pop();
-            do {
-                var t = stack.removeLast();
-                sb.append(t);
-            } while (!stack.isEmpty());
-            return new Number(sb.toString());
+        Number explodeIfNeeded() {
+            int level = 0;
+            StringBuilder sb = new StringBuilder();
+            int begin = -1;
+            int end = -1;
+            int lNum;
+            int rNum;
+
+            int idx = 0;
+            for (var a : str.split("")) {
+                if (a.equals("[")) ++level;
+                if (a.equals("]")) --level;
+                if (level > 4) {
+                    if (sb.isEmpty()) begin = idx;
+                    sb.append(a);
+                }
+                if (level == 4 && !sb.isEmpty()) {
+                    end = idx;
+                    sb.append(a);
+                    break;
+                }
+                ++idx;
+            }
+            if (!sb.isEmpty()) {
+                String chunk = sb.toString();
+                String[] nums = chunk.replace("[", "").replace("]", "").split(",");
+                lNum = Integer.parseInt(nums[0]);
+                rNum = Integer.parseInt(nums[1]);
+
+                String before = "";
+                String after = "";
+
+
+                log.info(format("Needs %s exploded at (%d-%d) lNum=%d rNum=%d", sb, begin, end, lNum, rNum));
+                Matcher matcher = Pattern.compile("\\d+").matcher(str);
+                matcher.region(end+1,str.length()-1);
+                if (matcher.find()) {
+                    after = matcher.group(0);
+                    log.info(matcher.group(0));
+                }
+
+                Matcher matcher2 = Pattern.compile("(?:.*?(\\d+))+").matcher(str);
+                matcher2.region(0,begin-1);
+                if (matcher2.find()) {
+                    before = matcher2.group(1);
+                    log.info("Last before " + matcher2.group(1));
+                }
+
+                StringBuilder out = new StringBuilder();
+                if (!before.isEmpty()) {
+                    out.append( new StringBuilder(str.substring(0,begin))
+                            .reverse()
+                            .toString()
+                            .replaceFirst("\\d+",
+                                    String.valueOf((Integer.parseInt(before)+lNum)))
+                            )
+                            .reverse();
+                } else {
+                    out.append(str, 0, begin);
+                }
+                out.append("0");
+                if (!after.isEmpty()) {
+                    out.append(str.substring(end+1)
+                            .replaceFirst("\\d+", String.valueOf(Integer.parseInt(after)+rNum)));
+                }else {
+                    out.append(str.substring(end+1));
+                }
+                log.info("Changes - " + out);
+
+                this.str = out.toString();
+            }
+            return this;
         }
 
         public Number add(Number n) {
@@ -61,104 +126,6 @@ public class SnailFish {
             return Objects.hash(str);
         }
 
-        public Number reduce() {
-            StringBuilder sb = new StringBuilder();
-            Deque<String> stack = new ArrayDeque<>();
-
-            int depth = 0;
-            boolean explode = false;
-
-            String openBrackets = "";
-            String closeBrackets = "";
-            String number;
-            String addNumber = "";
-            boolean done = false;
-
-            for(var a : str.split(",")) {
-                if(a.charAt(0) == '[') {
-                    int idx = a.lastIndexOf('[') + 1;
-                    openBrackets = a.substring(0,idx);
-                    number = a.substring(idx);
-                } else {
-                    int idx = a.indexOf(']');
-                    number = a.substring(0,idx);
-                    closeBrackets = a.substring(idx);
-                }
-
-                depth += pushBrackets(openBrackets, stack);
-
-                if (done) {
-                    depth = 0;
-                }
-                if (depth > 4) {
-                    done = true;
-                    explode = true;
-                    stack.pop();
-                    --depth;
-
-                    if (stack.peek() != null) {
-                        if (stack.peek().equals("[")) {
-                            number = "0";
-                        } else {
-                            stack.pop();
-                            addNumber = stack.pop();
-                            number = format("%d", Integer.parseInt(addNumber) + Integer.parseInt(number));
-                            addNumber = "";
-                        }
-                    }
-                } else {
-                    if (explode) {
-                        explode = false;
-                        addNumber = number;
-                        if (closeBrackets.length() > 1) {
-                            closeBrackets = closeBrackets.substring(1);
-                            number= "0";
-                        } else {
-                            closeBrackets = "";
-//                            number = "";
-                        }
-//                        if (openBrackets.length() > 0) stack.pop();
-
-                        --depth;
-                    } else if (!addNumber.isEmpty()) {
-                        String s1 = stack.pop();
-                        String s2 = stack.pop();
-
-                        if(s2.matches("[0-9]+")) {
-                            number = format("%d", Integer.parseInt(s2) + Integer.parseInt(number));
-                        } else {
-                            stack.push(s2);
-                            stack.push(s1);
-                            number = format("%d", Integer.parseInt(addNumber) + Integer.parseInt(number));
-                        }
-
-                        addNumber = "";
-                    }
-                }
-                if (!number.equals("")) {
-                    stack.push(number);
-                }
-                depth -= pushBrackets(closeBrackets, stack);
-                if (!number.equals("")) {
-                    stack.push(",");
-                }
-
-                openBrackets = "";
-                closeBrackets = "";
-            }
-
-            return numberFromStack(sb, stack);
-        }
-
-        private int pushBrackets(String brackets, Deque<String> stack) {
-            int depth=0;
-            if (brackets.length() == 0) return depth;
-            for (var bracket : brackets.split("")) {
-                stack.push(bracket);
-                ++depth;
-            }
-            return depth;
-        }
 
         public Number splitReduce() {
             StringBuilder sb = new StringBuilder();
