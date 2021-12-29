@@ -10,6 +10,17 @@ class SnailFishTest extends Specification {
         snailFish = new SnailFish()
     }
 
+    def "should reduce fifth example number"() {
+
+        given:
+        SnailFish.Number n1 = new SnailFish.Number("[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]")
+        SnailFish.Number n2 = new SnailFish.Number("[[3,[2,[8,0]]],[9,[5,[7,0]]]]")
+
+
+        expect:
+        n2 == n1.reduce()
+    }
+
     def "should reduce a fourth number"() {
         given:
         SnailFish.Number n1 = new SnailFish.Number("[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]")

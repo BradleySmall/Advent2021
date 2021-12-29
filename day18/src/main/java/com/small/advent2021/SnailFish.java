@@ -8,7 +8,9 @@ import java.util.Objects;
 
 @Slf4j
 public class SnailFish {
+    private SnailFish() {
 
+    }
 
     public static class Number {
         private final String str;
@@ -16,6 +18,16 @@ public class SnailFish {
         public Number(String str) {
             this.str = str;
         }
+
+        private static Number numberFromStack(StringBuilder sb, Deque<String> stack) {
+            if (stack.peek() != null && stack.peek().equals(",")) stack.pop();
+            do {
+                var t = stack.removeLast();
+                sb.append(t);
+            } while (!stack.isEmpty());
+            return new Number(sb.toString());
+        }
+
         public Number add(Number n) {
             return new Number(String.format("[%s,%s]", str, n.toString()));
         }
@@ -43,95 +55,88 @@ public class SnailFish {
             Deque<String> stack = new ArrayDeque<>();
 
             int depth = 0;
-            boolean addNext = false;
+            boolean explode = false;
+
+            String openBrackets = "";
+            String closeBrackets = "";
+            String number;
+            String addNumber = "";
 
             for(var a : str.split(",")) {
-                String brackets;
-                String num;
-                String addNum = null;
                 if(a.charAt(0) == '[') {
                     int idx = a.lastIndexOf('[') + 1;
-                    String theBkts = a.substring(0,idx);
-                    String theNum = a.substring(idx);
-
-                    if(addNext == true) {
-                        String comma = stack.pop();
-                        String bkts = stack.pop();
-                        addNum = stack.pop();
-                        stack.push("0");
-                        stack.push(bkts.substring(1));
-                        stack.push(comma);
-                        addNext = false;
-                    }
-
-
-                    depth += idx;
-                    if (depth > 4) {
-                        brackets = a.substring(1, idx);
-                        if (stack.peek() == null || stack.peek().contains("[")) {
-                            num = "0";
-                        } else {
-                            stack.pop();
-                            var tmp = stack.pop();
-                            num = String.format("%d", Integer.parseInt(tmp) + Integer.parseInt(a.substring(idx)));
-                        }
-                        addNext = true;
-                    } else {
-                        brackets = a.substring(0, idx);
-                        if (addNum != null)
-                            num = String.format("%d", Integer.parseInt(addNum) + Integer.parseInt(a.substring(idx)));
-                        num = a.substring(idx);
-                    }
-                    stack.push(brackets);
-                    stack.push(num);
+                    openBrackets = a.substring(0,idx);
+                    number = a.substring(idx);
                 } else {
                     int idx = a.indexOf(']');
-
-                    if (depth > 4) {
-                        brackets = a.substring(idx);
-                        num = a.substring(0,idx);
-                        stack.push(num);
-                        stack.push(brackets);
-                        addNext = true;
-                    } else if (addNext){
-                        String comma = stack.pop();
-                        String bkts = stack.pop();
-                        var tmp = stack.pop();
-                        stack.push("0");
-                        stack.push(bkts.substring(1));
-                        stack.push(comma);
-
-                        num = String.format("%d", Integer.parseInt(tmp) + Integer.parseInt(a.substring(0,idx)));
-                        brackets = a.substring(idx);
-                        stack.push(num);
-                        stack.push(brackets);
-                        addNext = false;
-                    } else {
-                        num = a.substring(0,idx);
-                        brackets = a.substring(idx);
-                        stack.push(num);
-                        stack.push(brackets);
-                    }
-                    depth -= a.length() - idx;
+                    number = a.substring(0,idx);
+                    closeBrackets = a.substring(idx);
                 }
+
+                depth += pushBrackets(openBrackets, stack);
+                if (depth > 4) {
+
+                    explode = true;
+                    stack.pop();
+                    --depth;
+
+                    if (stack.peek() != null) {
+                        if (stack.peek().equals("[")) {
+                            number = "0";
+                        } else {
+                            stack.pop();
+                            addNumber = stack.pop();
+                            number = String.format("%d", Integer.parseInt(addNumber) + Integer.parseInt(number));
+                            addNumber = "";
+                        }
+                    }
+                } else {
+                    if (explode) {
+                        explode = false;
+                        addNumber = number;
+                        if (closeBrackets.length() > 1) {
+                            closeBrackets = closeBrackets.substring(1);
+                            number= "0";
+                        } else {
+                            closeBrackets = "";
+                        }
+
+                        --depth;
+                    } else if (!addNumber.isEmpty()) {
+                        String s1 = stack.pop();
+                        String s2 = stack.pop();
+
+                        if(s2.matches("[0-9]+")) {
+                            number = String.format("%d", Integer.parseInt(s2) + Integer.parseInt(number));
+                        } else {
+                            stack.push(s2);
+                            stack.push(s1);
+                            number = String.format("%d", Integer.parseInt(addNumber) + Integer.parseInt(number));
+                        }
+
+                        addNumber = "";
+                    }
+                }
+                stack.push(number);
+                depth -= pushBrackets(closeBrackets, stack);
                 stack.push(",");
-            }
-            if(addNext == true) {
-                String s1 = stack.pop();
-                String s2 = stack.pop();
-                String s3 = stack.pop();
-                stack.push("0");
-                stack.push(s2.substring(1));
-                stack.push(s3);
-                addNext = false;
+
+                openBrackets = "";
+                closeBrackets = "";
             }
 
-            stack.removeFirst();
-            do {
-                var t = stack.removeLast();
-                sb.append(t);
-            } while (!stack.isEmpty());
-            return new Number(sb.toString());
+            return numberFromStack(sb, stack);
+        }
+
+        private int pushBrackets(String brackets, Deque<String> stack) {
+            int depth=0;
+            if (brackets.length() == 0) return depth;
+            for (var bracket : brackets.split("")) {
+                stack.push(bracket);
+                ++depth;
+            }
+            return depth;
         }
     }
+
 }
