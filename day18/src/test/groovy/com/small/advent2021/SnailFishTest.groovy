@@ -1,17 +1,21 @@
 package com.small.advent2021
 
-
+import spock.lang.Ignore
 import spock.lang.Specification
 
 
 class SnailFishTest extends Specification {
-    private SnailFish snailFish
+    def "should show magnitude" () {
+        given:
+        SnailFish.Number n1 = new SnailFish.Number("[9,1]")
+        SnailFish.Number n2 = new SnailFish.Number("[1,9]")
 
-    def setup() {
-        snailFish = new SnailFish()
+        expect:
+        n1.getMagnitude() == 29
+        n2.getMagnitude() == 21
     }
 
-    //@Ignore
+    @Ignore
     def "should add list example 4"() {
         given:
         var theList = List.of(
@@ -29,7 +33,7 @@ class SnailFishTest extends Specification {
 //        new SnailFish.Number("[[[[4,2],2],6],[8,7]]")
 //        )
 
-        SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
+        SnailFish.Number n1 = new SnailFish.Number().addList(theList)
 //        SnailFish.Number n2 = new SnailFish.Number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
         SnailFish.Number n2 = new SnailFish.Number("[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]")
         expect:
@@ -46,7 +50,7 @@ class SnailFishTest extends Specification {
                 new SnailFish.Number("[5,5]"),
                 new SnailFish.Number("[6,6]")
         )
-        SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
+        SnailFish.Number n1 = new SnailFish.Number().addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[5,0],[7,4]],[5,5]],[6,6]]")
 
         expect:
@@ -62,7 +66,7 @@ class SnailFishTest extends Specification {
                 new SnailFish.Number("[4,4]"),
                 new SnailFish.Number("[5,5]")
         )
-        SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
+        SnailFish.Number n1 = new SnailFish.Number().addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[3,0],[5,3]],[4,4]],[5,5]]")
 
         expect:
@@ -76,7 +80,7 @@ class SnailFishTest extends Specification {
                 new SnailFish.Number("[2,2]"),
                 new SnailFish.Number("[3,3]"),
                 new SnailFish.Number("[4,4]"))
-        SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
+        SnailFish.Number n1 = new SnailFish.Number().addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[1,1],[2,2]],[3,3]],[4,4]]")
 
         expect:
