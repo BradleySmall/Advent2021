@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static java.lang.Math.max;
 import static java.lang.String.format;
 
 @Slf4j
@@ -20,12 +18,30 @@ public class SnailFish {
 
     private List<Number> stringList;
 
-    private SnailFish() {
-        this("day18/input.txt");
-    }
-
     public SnailFish(String fileName) {
         processFile(fileName);
+    }
+
+    public int getLargestMagnitude() {
+        int result = 0;
+        List<List<Number>> listList = new ArrayList<>();
+
+        for (var left : stringList) {
+            for (var right : stringList) {
+                if (left != right) {
+                    listList.add(List.of(left, right));
+                }
+            }
+        }
+
+        for (var list : listList) {
+            Number left = new Number(list.get(0).toString());
+            Number right = new Number(list.get(1).toString());
+
+            result = max(left.add(right).getMagnitude(), result);
+        }
+
+        return result;
     }
 
     private void processFile(String fileName) {
@@ -67,7 +83,6 @@ public class SnailFish {
                     default -> acc.append(token);
                 }
             }
-
             return Integer.parseInt(stack.pop());
         }
 
@@ -85,9 +100,9 @@ public class SnailFish {
                 acc.setLength(0);
             }
             String rNum = stack.pop();
-            /*String comma =*/ stack.pop();
+            stack.pop();
             String lNum = stack.pop();
-            /*String brkt =*/ stack.pop();
+            stack.pop();
 
             int value = (Integer.parseInt(lNum) * 3) + (Integer.parseInt(rNum) * 2);
 

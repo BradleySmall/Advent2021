@@ -4,6 +4,14 @@ import spock.lang.Specification
 
 
 class SnailFishTest extends Specification {
+    def "should solve second star"() {
+        given:
+        SnailFish snailFish = new SnailFish("input.txt")
+
+        expect:
+        snailFish.getLargestMagnitude() == 4749
+    }
+
     def "solve the puzzle"() {
         given:
         SnailFish snailFish = new SnailFish("input.txt")
@@ -26,7 +34,7 @@ class SnailFishTest extends Specification {
         SnailFish.Number n7 = new SnailFish.Number("[[[[3,0],[5,3]],[4,4]],[5,5]]")
         SnailFish.Number n8 = new SnailFish.Number("[[[[5,0],[7,4]],[5,5]],[6,6]]")
         SnailFish.Number n9 = new SnailFish.Number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
-               
+
         expect:
         n1.getMagnitude() == 29
         n2.getMagnitude() == 21
