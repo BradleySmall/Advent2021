@@ -1,6 +1,5 @@
 package com.small.advent2021
 
-import spock.lang.Ignore
 import spock.lang.Specification
 
 
@@ -15,27 +14,23 @@ class SnailFishTest extends Specification {
         n2.getMagnitude() == 21
     }
 
-    @Ignore
     def "should add list example 4"() {
         given:
         var theList = List.of(
         new SnailFish.Number("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"),
-        new SnailFish.Number("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]")
+        new SnailFish.Number("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]"),
+        new SnailFish.Number("[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]"),
+        new SnailFish.Number("[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]"),
+        new SnailFish.Number("[7,[5,[[3,8],[1,4]]]]"),
+        new SnailFish.Number("[[2,[2,2]],[8,[8,1]]]"),
+        new SnailFish.Number("[2,9]"),
+        new SnailFish.Number("[1,[[[9,3],9],[[9,0],[0,7]]]]"),
+        new SnailFish.Number("[[[5,[7,4]],7],1]"),
+        new SnailFish.Number("[[[[4,2],2],6],[8,7]]")
         )
-//                ,
-//        new SnailFish.Number("[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]"),
-//        new SnailFish.Number("[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]"),
-//        new SnailFish.Number("[7,[5,[[3,8],[1,4]]]]"),
-//        new SnailFish.Number("[[2,[2,2]],[8,[8,1]]]"),
-//        new SnailFish.Number("[2,9]"),
-//        new SnailFish.Number("[1,[[[9,3],9],[[9,0],[0,7]]]]"),
-//        new SnailFish.Number("[[[5,[7,4]],7],1]"),
-//        new SnailFish.Number("[[[[4,2],2],6],[8,7]]")
-//        )
 
         SnailFish.Number n1 = new SnailFish.Number().addList(theList)
-//        SnailFish.Number n2 = new SnailFish.Number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
-        SnailFish.Number n2 = new SnailFish.Number("[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]")
+        SnailFish.Number n2 = new SnailFish.Number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
         expect:
         n2 == n1
     }

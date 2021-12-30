@@ -71,7 +71,7 @@ public class SnailFish {
             else this.str = format("[%s,%s]", str, n.toString());
 
             while (needsExploded() || needsSplit()) {
-                if (needsExploded()) {
+                while (needsExploded()) {
                     explodeReduce();
                 }
                 if (needsSplit()) {
