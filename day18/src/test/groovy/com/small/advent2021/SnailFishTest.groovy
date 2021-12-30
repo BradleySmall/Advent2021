@@ -1,5 +1,6 @@
 package com.small.advent2021
 
+
 import spock.lang.Specification
 
 
@@ -8,6 +9,31 @@ class SnailFishTest extends Specification {
 
     def setup() {
         snailFish = new SnailFish()
+    }
+
+    //@Ignore
+    def "should add list example 4"() {
+        given:
+        var theList = List.of(
+        new SnailFish.Number("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"),
+        new SnailFish.Number("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]")
+        )
+//                ,
+//        new SnailFish.Number("[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]"),
+//        new SnailFish.Number("[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]"),
+//        new SnailFish.Number("[7,[5,[[3,8],[1,4]]]]"),
+//        new SnailFish.Number("[[2,[2,2]],[8,[8,1]]]"),
+//        new SnailFish.Number("[2,9]"),
+//        new SnailFish.Number("[1,[[[9,3],9],[[9,0],[0,7]]]]"),
+//        new SnailFish.Number("[[[5,[7,4]],7],1]"),
+//        new SnailFish.Number("[[[[4,2],2],6],[8,7]]")
+//        )
+
+        SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
+//        SnailFish.Number n2 = new SnailFish.Number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
+        SnailFish.Number n2 = new SnailFish.Number("[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]")
+        expect:
+        n2 == n1
     }
 
     def "should add list example 3"() {
@@ -23,7 +49,6 @@ class SnailFishTest extends Specification {
         SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[5,0],[7,4]],[5,5]],[6,6]]")
 
-        n1 = n1.explodeIfNeeded().explodeIfNeeded().explodeIfNeeded().explodeIfNeeded().explodeIfNeeded()
         expect:
         n2 == n1
 
@@ -40,11 +65,10 @@ class SnailFishTest extends Specification {
         SnailFish.Number n1 = new SnailFish.Number("").addList(theList)
         SnailFish.Number n2 = new SnailFish.Number("[[[[3,0],[5,3]],[4,4]],[5,5]]")
 
-        n1 = n1.explodeIfNeeded().explodeIfNeeded()
         expect:
         n2 == n1
-
     }
+
     def "should add list"() {
         given:
         var theList = List.of(
@@ -57,7 +81,6 @@ class SnailFishTest extends Specification {
 
         expect:
         n2 == n1
-
     }
 
     def "should split first example"() {
@@ -70,7 +93,7 @@ class SnailFishTest extends Specification {
         expect:
         n2 == n1.splitReduce()
         n3 == n2.splitReduce()
-        n4 == n3.explodeIfNeeded()
+        n4 == n3.explodeReduce()
     }
 
     def "should reduce fifth example number"() {
@@ -81,7 +104,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.explodeIfNeeded()
+        n2 == n1.explodeReduce()
     }
 
     def "should reduce a fourth number"() {
@@ -91,7 +114,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.explodeIfNeeded()
+        n2 == n1.explodeReduce()
     }
 
     def "should reduce a third number"() {
@@ -101,7 +124,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.explodeIfNeeded()
+        n2 == n1.explodeReduce()
     }
 
     def "should reduce a second number"() {
@@ -111,7 +134,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.explodeIfNeeded()
+        n2 == n1.explodeReduce()
     }
 
     def "should reduce a number"() {
@@ -121,7 +144,7 @@ class SnailFishTest extends Specification {
 
 
         expect:
-        n2 == n1.explodeIfNeeded()
+        n2 == n1.explodeReduce()
     }
 
     def "should add 2 numbers"() {

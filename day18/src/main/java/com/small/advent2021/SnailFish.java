@@ -22,92 +22,143 @@ public class SnailFish {
             this.str = str;
         }
 
-        Number explodeIfNeeded() {
-            int level = 0;
-            StringBuilder sb = new StringBuilder();
-            int begin = -1;
-            int end = -1;
-            int lNum;
-            int rNum;
+        Number explodeReduce() {
+            NumberData nd = new NumberData();
 
-            int idx = 0;
-            for (var a : str.split("")) {
-                if (a.equals("[")) ++level;
-                if (a.equals("]")) --level;
-                if (level > 4) {
-                    if (sb.isEmpty()) begin = idx;
-                    sb.append(a);
-                }
-                if (level == 4 && !sb.isEmpty()) {
-                    end = idx;
-                    sb.append(a);
-                    break;
-                }
-                ++idx;
-            }
-            if (!sb.isEmpty()) {
-                String chunk = sb.toString();
-                String[] nums = chunk.replace("[", "").replace("]", "").split(",");
-                lNum = Integer.parseInt(nums[0]);
-                rNum = Integer.parseInt(nums[1]);
+            populateNumberData(nd);
 
-                String before = "";
-                String after = "";
-
-
-                log.info(format("Needs %s exploded at (%d-%d) lNum=%d rNum=%d", sb, begin, end, lNum, rNum));
-                Matcher matcher = Pattern.compile("\\d+").matcher(str);
-                matcher.region(end+1,str.length()-1);
-                if (matcher.find()) {
-                    after = matcher.group(0);
-                    log.info(matcher.group(0));
-                }
-
-                Matcher matcher2 = Pattern.compile("(?:.*?(\\d+))+").matcher(str);
-                matcher2.region(0,begin-1);
-                if (matcher2.find()) {
-                    before = matcher2.group(1);
-                    log.info("Last before " + matcher2.group(1));
-                }
+            if (!nd.sb.isEmpty()) {
+                String chunk = nd.sb.toString();
+                String[] numbs = chunk
+                        .replace("[", "")
+                        .replace("]", "")
+                        .split(",");
 
                 StringBuilder out = new StringBuilder();
-                if (!before.isEmpty()) {
-                    out.append( new StringBuilder(str.substring(0,begin))
-                            .reverse()
-                            .toString()
-                            .replaceFirst("\\d+",
-                                    String.valueOf((Integer.parseInt(before)+lNum)))
-                            )
-                            .reverse();
-                } else {
-                    out.append(str, 0, begin);
-                }
+
+                int lNum = Integer.parseInt(numbs[0]);
+                String before = populateBeforeValue(nd);
+                stringBuilderBeginning(nd, lNum, before, out);
+
                 out.append("0");
-                if (!after.isEmpty()) {
-                    out.append(str.substring(end+1)
-                            .replaceFirst("\\d+", String.valueOf(Integer.parseInt(after)+rNum)));
-                }else {
-                    out.append(str.substring(end+1));
-                }
-                log.info("Changes - " + out);
+
+                int rNum = Integer.parseInt(numbs[1]);
+                String after = populateAfterValue(nd);
+                stringBuilderEnding(nd, out, rNum, after);
 
                 this.str = out.toString();
             }
             return this;
         }
 
-        public Number add(Number n) {
-            if (this.str.equals("")) return n;
-            return new Number(format("[%s,%s]", str, n.toString()));
+        private void stringBuilderEnding(NumberData nd, StringBuilder out, int rNum, String after) {
+            String sub = str.substring(nd.end + 1);
+            if (!after.isEmpty()) {
+                rNum += Integer.parseInt(after);
+                after = String.valueOf(rNum);
+                out.append(sub
+                        .replaceFirst("\\d+", after));
+            } else {
+                out.append(sub);
+            }
         }
+
+        private void stringBuilderBeginning(NumberData nd, int lNum, String before, StringBuilder out) {
+            String sub = str.substring(0, nd.begin);
+            if (!before.isEmpty()) {
+                lNum += Integer.parseInt(before);
+                before = new StringBuilder(String.valueOf(lNum)).reverse().toString();
+
+                out.append(new StringBuilder(sub)
+                                .reverse()
+                                .toString()
+                                .replaceFirst("\\d+", before)
+                        )
+                        .reverse();
+            } else {
+                out.append(sub);
+            }
+        }
+
+        private String populateBeforeValue(NumberData nd) {
+            String before = "";
+            Matcher matcher = Pattern.compile("(?:.*?(\\d+))+").matcher(str);
+            matcher.region(0, nd.begin - 1);
+            if (matcher.find()) {
+                before = matcher.group(1);
+            }
+            return before;
+        }
+
+        private String populateAfterValue(NumberData nd) {
+            String after = "";
+
+            Matcher matcher = Pattern.compile("\\d+").matcher(str);
+            matcher.region(nd.end + 1, str.length() - 1);
+            if (matcher.find()) {
+                after = matcher.group(0);
+            }
+            return after;
+        }
+
+        private void populateNumberData(NumberData nd) {
+            String[] split = str.split("");
+            for (int idx = 0; idx < split.length; ++idx) {
+                String a = split[idx];
+                if (a.equals("[")) {
+                    ++nd.level;
+                    if (nd.level > 4 && split[idx + 1].matches("(.*)\\d(.*)")) {
+                        nd.begin = idx;
+                        nd.sb.setLength(0);
+                        nd.sb.append(a);
+                    }
+                } else if (a.equals("]")) {
+                    --nd.level;
+                    if (!nd.sb.isEmpty()) {
+                        nd.sb.append(a);
+                        nd.end = idx;
+                        break;
+                    }
+                } else if (!nd.sb.isEmpty()) {
+                    nd.sb.append(a);
+                }
+            }
+        }
+
+        private boolean needsSplit() {
+            return str.matches(".*\\d\\d.*");
+        }
+
+        private boolean needsExploded() {
+            NumberData nd = new NumberData();
+            populateNumberData(nd);
+            return !nd.sb.isEmpty();
+        }
+
+        public Number add(Number n) {
+            if (this.str.equals("")) this.str = n.str;
+            else this.str = format("[%s,%s]", str, n.toString());
+
+            while (needsExploded() || needsSplit()) {
+                if (needsExploded()) {
+                    explodeReduce();
+                }
+                if (needsSplit()) {
+                    splitReduce();
+                }
+            }
+            return this;
+        }
+
         public Number addList(List<Number> list) {
-            Number n = new Number("");
+            this.str = "";
             for (var a : list) {
-                n = n.add(a);
+                add(a);
             }
 
-            return n;
+            return this;
         }
+
         @Override
         public String toString() {
             return str;
@@ -126,7 +177,6 @@ public class SnailFish {
             return Objects.hash(str);
         }
 
-
         public Number splitReduce() {
             StringBuilder sb = new StringBuilder();
             String openBrackets = "";
@@ -134,7 +184,7 @@ public class SnailFish {
             String number;
             boolean done = false;
 
-            for(var a : str.split(",")) {
+            for (var a : str.split(",")) {
                 if (a.charAt(0) == '[') {
                     int idx = a.lastIndexOf('[') + 1;
                     openBrackets = a.substring(0, idx);
@@ -159,8 +209,9 @@ public class SnailFish {
                 openBrackets = "";
                 closeBrackets = "";
             }
-            sb.deleteCharAt(sb.length()-1);
-            return new Number(sb.toString());
+            sb.deleteCharAt(sb.length() - 1);
+            this.str = sb.toString();
+            return this;
         }
 
         private String getNumberOrSplit(String number) {
@@ -170,19 +221,25 @@ public class SnailFish {
                 int leftNum;
                 int rightNum;
                 if (num % 2 == 0) {
-                   leftNum = num / 2;
-                   rightNum = leftNum;
+                    leftNum = num / 2;
+                    rightNum = leftNum;
                 } else {
                     leftNum = num / 2;
                     rightNum = leftNum + 1;
                 }
-                sb.append(format("[%d,%d]",leftNum, rightNum));
+                sb.append(format("[%d,%d]", leftNum, rightNum));
             } else {
                 sb.append(number);
             }
 
-
             return sb.toString();
+        }
+
+        static class NumberData {
+            final StringBuilder  sb = new StringBuilder();
+            int begin = -1;
+            int end = -1;
+            int level = 0;
         }
     }
 
