@@ -4,29 +4,55 @@ import spock.lang.Specification
 
 
 class SnailFishTest extends Specification {
-    def "should show magnitude" () {
+    def "solve the puzzle"() {
+        given:
+        SnailFish snailFish = new SnailFish("input.txt")
+        SnailFish.Number n1 = new SnailFish.Number()
+        n1.addList(snailFish.getStringList())
+
+        expect:
+        n1.getMagnitude() == 4323
+        n1 == new SnailFish.Number("[[[[7,7],[7,8]],[[7,7],[9,7]]],[[[7,9],[0,9]],[[8,9],[7,0]]]]")
+    }
+
+    def "should show magnitude"() {
         given:
         SnailFish.Number n1 = new SnailFish.Number("[9,1]")
         SnailFish.Number n2 = new SnailFish.Number("[1,9]")
-
+        SnailFish.Number n3 = new SnailFish.Number("[[9,1],[1,9]]")
+        SnailFish.Number n4 = new SnailFish.Number("[[1,2],[[3,4],5]]")
+        SnailFish.Number n5 = new SnailFish.Number("[[[[0,7],4],[[7,8],[6,0]]],[8,1]]")
+        SnailFish.Number n6 = new SnailFish.Number("[[[[1,1],[2,2]],[3,3]],[4,4]]")
+        SnailFish.Number n7 = new SnailFish.Number("[[[[3,0],[5,3]],[4,4]],[5,5]]")
+        SnailFish.Number n8 = new SnailFish.Number("[[[[5,0],[7,4]],[5,5]],[6,6]]")
+        SnailFish.Number n9 = new SnailFish.Number("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
+               
         expect:
         n1.getMagnitude() == 29
         n2.getMagnitude() == 21
+        n3.getMagnitude() == 129
+        n4.getMagnitude() == 143
+        n5.getMagnitude() == 1384
+        n6.getMagnitude() == 445
+        n7.getMagnitude() == 791
+        n8.getMagnitude() == 1137
+        n9.getMagnitude() == 3488
+        new SnailFish.Number("[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]").getMagnitude() == 4140
     }
 
     def "should add list example 4"() {
         given:
         var theList = List.of(
-        new SnailFish.Number("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"),
-        new SnailFish.Number("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]"),
-        new SnailFish.Number("[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]"),
-        new SnailFish.Number("[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]"),
-        new SnailFish.Number("[7,[5,[[3,8],[1,4]]]]"),
-        new SnailFish.Number("[[2,[2,2]],[8,[8,1]]]"),
-        new SnailFish.Number("[2,9]"),
-        new SnailFish.Number("[1,[[[9,3],9],[[9,0],[0,7]]]]"),
-        new SnailFish.Number("[[[5,[7,4]],7],1]"),
-        new SnailFish.Number("[[[[4,2],2],6],[8,7]]")
+                new SnailFish.Number("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]"),
+                new SnailFish.Number("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]"),
+                new SnailFish.Number("[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]"),
+                new SnailFish.Number("[[[[2,4],7],[6,[0,5]]],[[[6,8],[2,8]],[[2,1],[4,5]]]]"),
+                new SnailFish.Number("[7,[5,[[3,8],[1,4]]]]"),
+                new SnailFish.Number("[[2,[2,2]],[8,[8,1]]]"),
+                new SnailFish.Number("[2,9]"),
+                new SnailFish.Number("[1,[[[9,3],9],[[9,0],[0,7]]]]"),
+                new SnailFish.Number("[[[5,[7,4]],7],1]"),
+                new SnailFish.Number("[[[[4,2],2],6],[8,7]]")
         )
 
         SnailFish.Number n1 = new SnailFish.Number().addList(theList)
@@ -52,6 +78,7 @@ class SnailFishTest extends Specification {
         n2 == n1
 
     }
+
     def "should add list example 2"() {
         given:
         var theList = List.of(

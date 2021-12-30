@@ -2,18 +2,45 @@ package com.small.advent2021;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
 @Slf4j
 public class SnailFish {
-    private SnailFish() {
 
+    private List<Number> stringList;
+
+    private SnailFish() {
+        this("day18/input.txt");
+    }
+
+    public SnailFish(String fileName) {
+        processFile(fileName);
+    }
+
+    private void processFile(String fileName) {
+        Path path = Path.of(fileName);
+        try (Stream<String> s = Files.lines(path)) {
+            stringList = s
+                    .map(Number::new)
+                    .toList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Number> getStringList() {
+        return stringList;
     }
 
     public static class Number {
@@ -28,15 +55,45 @@ public class SnailFish {
         }
 
         public int getMagnitude() {
-            int [] numbs = Arrays.stream(str
-                    .replace("[","")
-                    .replace("]","")
-                    .split(","))
-                    .mapToInt(Integer::parseInt)
-                    .toArray();
+            Deque<String> stack = new ArrayDeque<>();
+            String[] split = str.split("");
 
-            return (numbs[0] * 3) + (numbs[1] * 2);
+            StringBuilder acc = new StringBuilder();
+            for (var token : split) {
+                switch (token) {
+                    case "[" -> stack.push(token);
+                    case "]" -> doRtBracket(stack, acc);
+                    case "," -> doComma(stack, acc, token);
+                    default -> acc.append(token);
+                }
+            }
+
+            return Integer.parseInt(stack.pop());
         }
+
+        private void doComma(Deque<String> stack, StringBuilder acc, String token) {
+            if (!acc.isEmpty()) {
+                stack.push(acc.toString());
+                acc.setLength(0);
+            }
+            stack.push(token);
+        }
+
+        private void doRtBracket(Deque<String> stack, StringBuilder acc) {
+            if (!acc.isEmpty()) {
+                stack.push(acc.toString());
+                acc.setLength(0);
+            }
+            String rNum = stack.pop();
+            /*String comma =*/ stack.pop();
+            String lNum = stack.pop();
+            /*String brkt =*/ stack.pop();
+
+            int value = (Integer.parseInt(lNum) * 3) + (Integer.parseInt(rNum) * 2);
+
+            stack.push(String.valueOf(value));/*stack.pop(token) back to "[" calculate and push on the stack*/
+        }
+
         public Number explodeReduce() {
             NumberData nd = new NumberData();
 
